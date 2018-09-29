@@ -1,6 +1,10 @@
 package com.example.ali.listviewapi;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,14 +24,31 @@ public class fetchData extends AsyncTask<Void,Void,Void>
 {
 
     String output = "";
-    String JsonOutput = "";
-    List listOfObjects = new ArrayList();
+    boolean internettConnection = true;
+    Context context;
+    String APIPage;
+    ArrayList listOfObjects;
+
+    public fetchData(Context c, String APIPage, ArrayList<listObject> listObjects)
+    {
+        context = c;
+        this.APIPage = APIPage;
+        if(listObjects == null)
+        {
+            this.listOfObjects = new ArrayList();
+        }
+        else
+        {
+            this.listOfObjects = listObjects;
+        }
+    }
     @Override
     protected Void doInBackground(Void... voids)
     {
+        MainActivity.loadText.setText("Loading data from Api....");
         try
         {
-            URL url3 = new URL("https://data.brreg.no/enhetsregisteret/enhet.json?page=0");
+            URL url3 = new URL(APIPage);
             HttpURLConnection httpURLConnection  = (HttpURLConnection) url3.openConnection();
             InputStream inputStream = httpURLConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -40,8 +61,6 @@ public class fetchData extends AsyncTask<Void,Void,Void>
             JSONObject JsonObject = new JSONObject(output);
             JSONArray links = JsonObject.getJSONArray("links");
             JSONArray data = JsonObject.getJSONArray("data");
-            //JSONArray JA = new JSONArray(output);
-
             for(int i = 0 ; i < data.length(); i++)
             {
 
@@ -55,10 +74,8 @@ public class fetchData extends AsyncTask<Void,Void,Void>
                 String adresse = firstForretning.has("adresse") ? firstForretning.get("adresse").toString() : "No Adress";
                 String postNr = firstForretning.has("postnummer") ? firstForretning.get("postnummer").toString() : "No PostNr";
                 String hjemmeside = firstData.has("hjemmeside") ? firstData.get("hjemmeside").toString() : "No hjemmeside";
-                Object firmaNavnOBJ = firstData.get("navn");
-                JsonOutput += "Name: " + firmaNavn + "\nGender: " + organisasjonsNummer + "\nEye color: " +
-                        kommune + "\nFirst friend: " + "\n" + land + "\n\n";
                 listOfObjects.add(new listObject(firmaNavn,organisasjonsNummer, hjemmeside,adresse, postNr));
+                internettConnection = true;
             }
         }
         catch(MalformedURLException e)
@@ -67,21 +84,38 @@ public class fetchData extends AsyncTask<Void,Void,Void>
         }
         catch (IOException e)
         {
-
-        } catch (JSONException e) {
+            internettConnection = false;
+            MainActivity.loadText.setText("No internett connection...");
+        }
+        catch (JSONException e)
+        {
             e.printStackTrace();
         }
         return null;
     }
 
     @Override
-    protected void onPostExecute(Void aVoid)
-    {
-        super.onPostExecute(aVoid);
-
+    protected void onPreExecute() {
+        super.onPreExecute();
         MainActivity.listToShow = listOfObjects;
     }
-    public List<listObject> getList()
+
+    @Override
+    protected void onPostExecute(Void aVoid)
+    {
+        //Toast.makeText(context,String.valueOf(internettConnection), Toast.LENGTH_LONG).show();
+        super.onPostExecute(aVoid);
+        if(internettConnection)
+        {
+            MainActivity.adapter = new ItemAdapter(context, MainActivity.listToShow);
+            MainActivity.listView.setAdapter(MainActivity.adapter);
+            MainActivity.loadText.setVisibility(View.GONE);
+            MainActivity.fetchBtn.setVisibility(View.GONE);
+            MainActivity.loadBtn.setVisibility(View.VISIBLE);
+            MainActivity.topBtn.setVisibility(View.VISIBLE);;
+        }
+    }
+    public ArrayList<listObject> getList()
     {
         return listOfObjects;
     }
