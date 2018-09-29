@@ -8,14 +8,16 @@ public class listObject implements Parcelable {
     private String orgNumber;
     private String hjemmeSide;
     private String adress;
+    private String postSted;
     private String postNr;
 
-    public listObject(String orgName, String orgNumber, String hjemmeSide, String adress, String postNr)
+    public listObject(String orgName, String orgNumber, String hjemmeSide, String adress, String postSted,String postNr)
     {
         this.orgName = orgName;
         this.orgNumber = orgNumber;
         this.hjemmeSide = hjemmeSide;
         this.adress = adress;
+        this.postSted = postSted;
         this.postNr = postNr;
 
     }
@@ -39,7 +41,10 @@ public class listObject implements Parcelable {
     public String getPostNr() {
         return postNr;
     }
-
+    public String getPostSted()
+    {
+        return postSted;
+    }
     protected listObject(Parcel in) {
         orgName = in.readString();
         orgNumber = in.readString();

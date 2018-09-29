@@ -66,15 +66,15 @@ public class fetchData extends AsyncTask<Void,Void,Void>
 
                 JSONObject firstData = (JSONObject) data.get(i);
                 JSONObject firstForretning = (JSONObject) firstData.get("forretningsadresse");
-                String firmaNavn = !firstData.get("navn").equals(new JSONObject()) ? firstData.get("navn").toString() : "No Name";
+                String firmaNavn = !firstData.get("navn").equals(new JSONObject()) ? firstData.get("navn").toString() : "Ingen navn";
                 String organisasjonsNummer = !firstData.get("organisasjonsnummer").equals(new JSONObject())? firstData.get("organisasjonsnummer").toString()
                         : "No Organisation number";
-                String kommune = firstForretning.has("kommune") ? firstForretning.get("kommune").toString() : "No Kommune";
-                String land =  firstForretning.has("land") ? firstForretning.get("land").toString() : "No Country";
-                String adresse = firstForretning.has("adresse") ? firstForretning.get("adresse").toString() : "No Adress";
-                String postNr = firstForretning.has("postnummer") ? firstForretning.get("postnummer").toString() : "No PostNr";
-                String hjemmeside = firstData.has("hjemmeside") ? firstData.get("hjemmeside").toString() : "No hjemmeside";
-                listOfObjects.add(new listObject(firmaNavn,organisasjonsNummer, hjemmeside,adresse, postNr));
+                String kommune = firstForretning.has("kommune") ? firstForretning.get("kommune").toString() : "Ingen kommune";
+                String postSted =  firstForretning.has("poststed") ? firstForretning.get("poststed").toString() : "Ingen Poststed";
+                String adresse = firstForretning.has("adresse") ? firstForretning.get("adresse").toString() : "Ingen Adress";
+                String postNr = firstForretning.has("postnummer") ? firstForretning.get("postnummer").toString() : "Ingen Postnummr";
+                String hjemmeside = firstData.has("hjemmeside") ? firstData.get("hjemmeside").toString() : "Ingen hjemmeside";
+                listOfObjects.add(new listObject(firmaNavn,organisasjonsNummer, hjemmeside,adresse, postSted,postNr));
                 internettConnection = true;
             }
         }
@@ -103,7 +103,6 @@ public class fetchData extends AsyncTask<Void,Void,Void>
     @Override
     protected void onPostExecute(Void aVoid)
     {
-        //Toast.makeText(context,String.valueOf(internettConnection), Toast.LENGTH_LONG).show();
         super.onPostExecute(aVoid);
         if(internettConnection)
         {

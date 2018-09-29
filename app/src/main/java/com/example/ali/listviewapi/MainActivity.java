@@ -77,9 +77,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*process = new fetchData(getApplicationContext());
-        process.execute();*/
-
         if(savedInstanceState != null)
         {
             if(savedInstanceState.getParcelableArrayList("listToShow") != null)
@@ -102,23 +99,20 @@ public class MainActivity extends AppCompatActivity {
         {
             process = new fetchData(getApplicationContext(),APIUrl, listToShow);
             process.execute();
-            //listToShow = process.getList();
         }
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String text = listView.getItemAtPosition(position).toString();
-                Toast.makeText(getApplicationContext(),"" + text, Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), showSelskap.class);
                 i.putExtra("orgNavn",adapter.getItem(position).getOrgName());
                 i.putExtra("orgNummer",adapter.getItem(position).getOrgNumber());
                 i.putExtra("orgAdresse",adapter.getItem(position).getAdress());
                 i.putExtra("orgHjemmeside",adapter.getItem(position).getHjemmeSide());
+                i.putExtra("orgPostSted", adapter.getItem(position).getPostSted());
                 i.putExtra("orgPostNr",adapter.getItem(position).getPostNr());
                 startActivity(i);
             }
         });
-        Toast.makeText(getApplicationContext(),"Page: " + APIUrlTest, Toast.LENGTH_LONG).show();
     }
     public void loadNextPage()
     {
@@ -168,10 +162,3 @@ public class MainActivity extends AppCompatActivity {
             outState.putParcelableArrayList("listToShow", listToShow);
         }
     }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-    }
-}
