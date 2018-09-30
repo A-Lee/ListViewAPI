@@ -15,7 +15,7 @@ Hvordan bruke applikasjonen:
 - Hvis man ikke har internett-tilkobling blir man varslet gjennom en textview som ellers informerer hvor mange sider av APIet
 som er lastet inn.
 Søk-knappen oppe til høyre søker etter selskapene i listen som starter med det man skriver. Hvis man vil at det skal søke på 
-selskap som inneholder ordene man har kan man endre det i MainActivity.java i linje 234 og linje 238 ved å bruke .contains()
+selskap som inneholder bokstavene man har kan man endre det i MainActivity.java i linje 234 og linje 238 ved å bruke .contains()
 istedenfor .startsWith(). 
 
 - Trykk på en rad for å få opp mer informasjon om selskapet.
