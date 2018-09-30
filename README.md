@@ -1,5 +1,7 @@
 # ListViewAPI
 
+- Tested på Nexus 4 virtuell telefon og Samsung Galaxy S7 Edge privat telefon
+
 Hvordan bruke applikasjonen:
 
 - Blå tekst betyr at teksten er trykkbar og vil utføre en funksjon.
