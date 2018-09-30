@@ -18,9 +18,9 @@ Søk-knappen oppe til høyre søker etter selskapene i listen som starter med de
 selskap som inneholder ordene man har kan man endre det i MainActivity.java i linje 234 og linje 238 ved å bruke .contains()
 istedenfor .startsWith(). 
 
--Trykk på en rad for å få opp mer informasjon om selskapet.
+- Trykk på en rad for å få opp mer informasjon om selskapet.
 
--Hjemmeside og adresse kan trykkes på. Hvis de har en gyldig hjemmeside og/eller adresse så vil de åpnes av telefonen dersom en 
+- Hjemmeside og adresse kan trykkes på. Hvis de har en gyldig hjemmeside og/eller adresse så vil de åpnes av telefonen dersom en 
 applikasjon som kan utføre oppgaven er tilgjengelig(En browser for hjemmeside, google maps for adresse).
 
 - Tilbake knappen sender bruker tilbake til listen.
