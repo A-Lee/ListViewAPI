@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+//Lager en egendefinert rad for listview. Velger å fremvise Organisasjons navn og nummer.
 public class ItemAdapter extends BaseAdapter
 {
     List<listObject> list = new ArrayList<listObject>();
@@ -45,6 +46,7 @@ public class ItemAdapter extends BaseAdapter
         return position;
     }
 
+    //Hvordan raden er satt opp står definert her.
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {

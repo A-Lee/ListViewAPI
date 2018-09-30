@@ -12,7 +12,9 @@ import android.widget.Toast;
 
 import java.net.URLEncoder;
 
+//Klasse/Vindu som viser informasjon om selskapet man har trykket på.
 public class showSelskap extends AppCompatActivity {
+
 
     private TextView orgNavn,orgNummer,orgAdresse,orgPostNr, orgHjemmeside, orgInfo;
     private Button backBtn, googleBtn;
@@ -38,6 +40,7 @@ public class showSelskap extends AppCompatActivity {
         orgPostNr.setText(info.getStringExtra("orgPostNr") + " " + info.getStringExtra("orgPostSted"));
 
         orgHjemmeside.setText(info.getStringExtra("orgHjemmeside"));
+        //Setter opp onClick metode som åpner en browser med hjemmeside hvis det er gyldig. Legger på http:// hvis det ikke allerede er oppitt.
         orgHjemmeside.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -63,6 +66,7 @@ public class showSelskap extends AppCompatActivity {
             }
         });
 
+        //Setter opp onClick metode som åpner google maps og søker opp adressen som står oppgitt hvis det er gyldig.
         orgAdresse.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -92,6 +96,7 @@ public class showSelskap extends AppCompatActivity {
         });
 
         googleBtn = (Button) findViewById(R.id.googleBtn);
+        //Setter opp onClick metode som åpner en browser og googler selskapets navn dersom man ønsker mer informasjon om selskapet.
         googleBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override

@@ -3,6 +3,8 @@ package com.example.ali.listviewapi;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+
+//Klasse som lagrer de mest interessante informasjonene om selskapet. Implementerer Parcelable for å kunne lagres i Bundle object
 public class listObject implements Parcelable {
     private String orgName;
     private String orgNumber;

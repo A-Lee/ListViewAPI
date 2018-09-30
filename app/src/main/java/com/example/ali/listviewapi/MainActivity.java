@@ -28,9 +28,15 @@ public class MainActivity extends AppCompatActivity {
     static ListView listView;
     static TextView loadText;
     static Button fetchBtn, topBtn, loadBtn;
+
+
     String APIUrl = "https://data.brreg.no/enhetsregisteret/enhet.json?page=0";
+
+    //Henter index fra APIUrl for å finne ut hvor '=' ligger. Laster inn neste side ved å erstatte text etter '=' med pagecounter
     int pageIndex = APIUrl.indexOf('=');
     int pageCounter = 0;
+
+    //Variabler som blir brukt av funksjonen loadNextPage()
     String toReplace;
     String APIUrlTest;
     static ArrayList<listObject> listToShow = new ArrayList();
@@ -44,12 +50,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Initialiserer elementer i activity
         loadText = (TextView) findViewById(R.id.loadText);
         listView = (ListView) findViewById(R.id.myListView);
         loadText = (TextView) findViewById(R.id.loadText);
-
         fetchBtn = (Button) findViewById(R.id.buttonFetch);
-        fetchBtn.setOnClickListener(new View.OnClickListener() {
+
+        //Knapp som henter data fra API hvis man startet programmet uten internett tilkobling
+        fetchBtn.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View v) {
                 process = new fetchData(getApplicationContext(), APIUrl, null);
@@ -58,28 +67,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Knapp som laster inn flere data fra API. Går til neste side i API og stopper når den når 100 ettersom det er maksgrensen.
         loadBtn = (Button) findViewById(R.id.loadBtn);
         loadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                pageCounter++;
-                loadNextPage();
+            public void onClick(View v)
+            {
+                if ((pageCounter + 1) > 100) {
+                    Toast.makeText(getApplicationContext(), "Kan ikke laste fler en 100 sider fra API", Toast.LENGTH_LONG).show();
+                } else {
+                    pageCounter++;
+
+                    //Metode som laster inn neste side fra API
+                    loadNextPage();
+                }
             }
         });
 
+        //Knapp som får listen til å peke på første(toppen)
         topBtn = (Button) findViewById(R.id.topBtn);
-        topBtn.setOnClickListener(new View.OnClickListener()
-        {
+        topBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 listView.setSelectionAfterHeaderView();
             }
         });
 
-        if(savedInstanceState != null)
+        //Henter data fra variabel savedInstanceState når man roterer skjermen. Hvis det ikke er noe der(første oppstart) hentes data fra API klassen
+        if (savedInstanceState != null)
         {
-            if(savedInstanceState.getParcelableArrayList("listToShow") != null)
+            if (savedInstanceState.getParcelableArrayList("listToShow") != null)
             {
 
                 listToShow = savedInstanceState.getParcelableArrayList("listToShow");
@@ -88,43 +105,49 @@ public class MainActivity extends AppCompatActivity {
                 fetchBtn.setVisibility(View.GONE);
                 loadBtn.setVisibility(View.VISIBLE);
                 topBtn.setVisibility(View.VISIBLE);
-            }
-            else
+            } else
             {
                 process = new fetchData(getApplicationContext(), APIUrl, listToShow);
                 process.execute();
             }
         }
+
         else
         {
-            process = new fetchData(getApplicationContext(),APIUrl, listToShow);
+            process = new fetchData(getApplicationContext(), APIUrl, listToShow);
             process.execute();
         }
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        //Åpner nytt vindu som viser opplysninger om selskapet
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
                 Intent i = new Intent(getApplicationContext(), showSelskap.class);
-                i.putExtra("orgNavn",adapter.getItem(position).getOrgName());
-                i.putExtra("orgNummer",adapter.getItem(position).getOrgNumber());
-                i.putExtra("orgAdresse",adapter.getItem(position).getAdress());
-                i.putExtra("orgHjemmeside",adapter.getItem(position).getHjemmeSide());
+                i.putExtra("orgNavn", adapter.getItem(position).getOrgName());
+                i.putExtra("orgNummer", adapter.getItem(position).getOrgNumber());
+                i.putExtra("orgAdresse", adapter.getItem(position).getAdress());
+                i.putExtra("orgHjemmeside", adapter.getItem(position).getHjemmeSide());
                 i.putExtra("orgPostSted", adapter.getItem(position).getPostSted());
-                i.putExtra("orgPostNr",adapter.getItem(position).getPostNr());
+                i.putExtra("orgPostNr", adapter.getItem(position).getPostNr());
                 startActivity(i);
             }
         });
     }
-    public void loadNextPage()
-    {
-        toReplace = APIUrl.substring(pageIndex +1, APIUrl.length());
+
+    //Funksjon som laster inn neste side av API ved å bruke en counter variabel og parse det inn i URL til API
+    public void loadNextPage() {
+        toReplace = APIUrl.substring(pageIndex + 1, APIUrl.length());
         APIUrlTest = APIUrl.replace(toReplace, String.valueOf(pageCounter));
         process = new fetchData(getApplicationContext(), APIUrlTest, listToShow);
         process.execute();
-        Toast.makeText(getApplicationContext(),"Page: " + APIUrlTest, Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Laster mer data...",Toast.LENGTH_SHORT).show();
     }
+
+    //Metode som definerer søkefeltet. Søker på organisasjonsnummer hvis input er bare tall. Ellers søker den etter firmanavn.
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         searchItem = menu.findItem(R.id.item_search);
@@ -139,11 +162,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 List<listObject> templist = new ArrayList<>();
-                for(listObject obj : listToShow)
-                {
-                    if(obj.getOrgName().toLowerCase().contains(newText.toLowerCase()))
-                    {
-                        templist.add(obj);
+                boolean isNumber = true;
+                for (Character c : newText.toCharArray()) {
+                    if (!Character.isDigit(c)) {
+                        isNumber = false;
+                        break;
+                    }
+                }
+                for (listObject obj : listToShow) {
+                    if (isNumber) {
+                        if (obj.getOrgNumber().startsWith(newText)) {
+                            templist.add(obj);
+                        }
+                    } else {
+                        if (obj.getOrgName().toLowerCase().startsWith(newText.toLowerCase())) {
+                            templist.add(obj);
+                        }
                     }
                 }
                 adapter = new ItemAdapter(getApplicationContext(), templist);
@@ -154,11 +188,12 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    //Lagrer listen ved orientasjon skifte.
     @Override
-    public void onSaveInstanceState (Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(listToShow.size() !=  0)
-        {
+        if (listToShow.size() != 0) {
             outState.putParcelableArrayList("listToShow", listToShow);
         }
     }
+}
