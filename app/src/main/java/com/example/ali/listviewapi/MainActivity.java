@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 process = new fetchData(getApplicationContext(), APIUrl, listToShow);
                 process.execute();
+
             }
             fetchBtn.setVisibility(View.GONE);
             loadBtn.setVisibility(View.VISIBLE);
