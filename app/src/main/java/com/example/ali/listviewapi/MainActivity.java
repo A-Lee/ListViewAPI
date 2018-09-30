@@ -28,13 +28,12 @@ public class MainActivity extends AppCompatActivity {
     static ListView listView;
     static TextView loadText;
     static Button fetchBtn, topBtn, loadBtn;
-
+    static int pageCounter = 0;
 
     String APIUrl = "https://data.brreg.no/enhetsregisteret/enhet.json?page=0";
 
     //Henter index fra APIUrl for å finne ut hvor '=' ligger. Laster inn neste side ved å erstatte text etter '=' med pagecounter
     int pageIndex = APIUrl.indexOf('=');
-    int pageCounter = 0;
 
     //Variabler som blir brukt av funksjonen loadNextPage()
     String toReplace;
