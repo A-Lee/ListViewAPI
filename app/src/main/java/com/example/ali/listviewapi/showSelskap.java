@@ -30,6 +30,8 @@ public class showSelskap extends AppCompatActivity {
         orgAdresse = (TextView) findViewById(R.id.orgAdresse);
         orgPostNr = (TextView) findViewById(R.id.orgPostNr);
         orgHjemmeside = (TextView) findViewById(R.id.orgHjemmeside);
+        backBtn = (Button) findViewById(R.id.backBtn);
+        googleBtn = (Button) findViewById(R.id.googleBtn);
 
         Intent info = getIntent();
 
@@ -85,7 +87,6 @@ public class showSelskap extends AppCompatActivity {
             }
         });
 
-        backBtn = (Button) findViewById(R.id.backBtn);
         backBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -95,7 +96,6 @@ public class showSelskap extends AppCompatActivity {
             }
         });
 
-        googleBtn = (Button) findViewById(R.id.googleBtn);
         //Setter opp onClick metode som åpner en browser og googler selskapets navn dersom man ønsker mer informasjon om selskapet.
         googleBtn.setOnClickListener(new View.OnClickListener()
         {
