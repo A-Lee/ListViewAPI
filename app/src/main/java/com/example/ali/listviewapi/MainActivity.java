@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
     static Button fetchBtn, topBtn, loadBtn;
     static int pageCounter = 0;
 
+
+    TextView sortFirma, sortOrgNum;
+    boolean sortFirmaAsc = false;
+    boolean sortOrgNumAsc = false;
     String APIUrl = "https://data.brreg.no/enhetsregisteret/enhet.json?page=0";
 
     //Henter index fra APIUrl for å finne ut hvor '=' ligger. Laster inn neste side ved å erstatte text etter '=' med pagecounter
@@ -54,6 +60,55 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.myListView);
         loadText = (TextView) findViewById(R.id.loadText);
         fetchBtn = (Button) findViewById(R.id.buttonFetch);
+
+        sortFirma = (TextView) findViewById(R.id.sortFirma);
+        sortOrgNum = (TextView) findViewById(R.id.sortOrgNum);
+
+
+        //Henter data fra variabel savedInstanceState når man roterer skjermen. Hvis det ikke er noe der(første oppstart) hentes data fra API klassen
+        if (savedInstanceState != null)
+        {
+            if (savedInstanceState.getParcelableArrayList("listToShow") != null)
+            {
+
+                listToShow = savedInstanceState.getParcelableArrayList("listToShow");
+                adapter = new ItemAdapter(getApplicationContext(), listToShow);
+                listView.setAdapter(adapter);
+                fetchBtn.setVisibility(View.GONE);
+                loadBtn.setVisibility(View.VISIBLE);
+                topBtn.setVisibility(View.VISIBLE);
+            } else
+            {
+                process = new fetchData(getApplicationContext(), APIUrl, listToShow);
+                process.execute();
+            }
+            loadText.setText(savedInstanceState.getString("loadText"));
+            sortFirmaAsc = savedInstanceState.getBoolean("sortFirmaAsc");
+            sortOrgNumAsc = savedInstanceState.getBoolean("sortOrgNumAsc");
+        }
+
+        else
+        {
+            process = new fetchData(getApplicationContext(), APIUrl, listToShow);
+            process.execute();
+        }
+
+        //Åpner nytt vindu som viser opplysninger om selskapet
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Intent i = new Intent(getApplicationContext(), showSelskap.class);
+                i.putExtra("orgNavn", adapter.getItem(position).getOrgName());
+                i.putExtra("orgNummer", adapter.getItem(position).getOrgNumber());
+                i.putExtra("orgAdresse", adapter.getItem(position).getAdress());
+                i.putExtra("orgHjemmeside", adapter.getItem(position).getHjemmeSide());
+                i.putExtra("orgPostSted", adapter.getItem(position).getPostSted());
+                i.putExtra("orgPostNr", adapter.getItem(position).getPostNr());
+                startActivity(i);
+            }
+        });
 
         //Knapp som henter data fra API hvis man startet programmet uten internett tilkobling
         fetchBtn.setOnClickListener(new View.OnClickListener()
@@ -92,48 +147,52 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Henter data fra variabel savedInstanceState når man roterer skjermen. Hvis det ikke er noe der(første oppstart) hentes data fra API klassen
-        if (savedInstanceState != null)
-        {
-            if (savedInstanceState.getParcelableArrayList("listToShow") != null)
-            {
-
-                listToShow = savedInstanceState.getParcelableArrayList("listToShow");
-                adapter = new ItemAdapter(getApplicationContext(), listToShow);
-                listView.setAdapter(adapter);
-                fetchBtn.setVisibility(View.GONE);
-                loadBtn.setVisibility(View.VISIBLE);
-                topBtn.setVisibility(View.VISIBLE);
-            } else
-            {
-                process = new fetchData(getApplicationContext(), APIUrl, listToShow);
-                process.execute();
-            }
-        }
-
-        else
-        {
-            process = new fetchData(getApplicationContext(), APIUrl, listToShow);
-            process.execute();
-        }
-
-        //Åpner nytt vindu som viser opplysninger om selskapet
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        sortFirma.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            public void onClick(View v)
             {
-                Intent i = new Intent(getApplicationContext(), showSelskap.class);
-                i.putExtra("orgNavn", adapter.getItem(position).getOrgName());
-                i.putExtra("orgNummer", adapter.getItem(position).getOrgNumber());
-                i.putExtra("orgAdresse", adapter.getItem(position).getAdress());
-                i.putExtra("orgHjemmeside", adapter.getItem(position).getHjemmeSide());
-                i.putExtra("orgPostSted", adapter.getItem(position).getPostSted());
-                i.putExtra("orgPostNr", adapter.getItem(position).getPostNr());
-                startActivity(i);
+                if(sortFirmaAsc == false)
+                {
+                    Collections.sort(listToShow, listObject.firmaNavnComparableAsc);
+                    sortFirmaAsc = true;
+                    sortOrgNumAsc = false;
+                }
+                else
+                {
+                    Collections.sort(listToShow, listObject.firmaNavnComparableDesc);
+                    sortFirmaAsc = false;
+                    sortFirmaAsc = false;
+                }
+                adapter = new ItemAdapter(getApplicationContext(), listToShow);
+                listView.setAdapter(adapter);
+            }
+        });
+
+        sortOrgNum.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if(sortOrgNumAsc == false)
+                {
+                    Collections.sort(listToShow,listObject.orgNummberComparableAsc);
+                    sortOrgNumAsc = true;
+                    sortFirmaAsc = false;
+                }
+                else
+                {
+                    Collections.sort(listToShow,listObject.orgNummberComparableDesc);
+                    sortOrgNumAsc = false;
+                    sortFirmaAsc = false;
+                }
+                adapter = new ItemAdapter(getApplicationContext(), listToShow);
+                listView.setAdapter(adapter);
             }
         });
     }
+
+
 
     //Funksjon som laster inn neste side av API ved å bruke en counter variabel og parse det inn i URL til API
     public void loadNextPage() {
@@ -193,6 +252,9 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         if (listToShow.size() != 0) {
             outState.putParcelableArrayList("listToShow", listToShow);
+            outState.putString("loadText", loadText.getText().toString());
+            outState.putBoolean("sortOrgNumAsc", sortOrgNumAsc);
+            outState.putBoolean("sortFirmaAsc", sortFirmaAsc);
         }
     }
 }
