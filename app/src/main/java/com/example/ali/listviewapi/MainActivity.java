@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.myListView);
         loadText = (TextView) findViewById(R.id.loadText);
         fetchBtn = (Button) findViewById(R.id.buttonFetch);
+        topBtn = (Button) findViewById(R.id.topBtn);
+        loadBtn = (Button) findViewById(R.id.loadBtn);
 
         sortFirma = (TextView) findViewById(R.id.sortFirma);
         sortOrgNum = (TextView) findViewById(R.id.sortOrgNum);
@@ -74,14 +76,14 @@ public class MainActivity extends AppCompatActivity {
                 listToShow = savedInstanceState.getParcelableArrayList("listToShow");
                 adapter = new ItemAdapter(getApplicationContext(), listToShow);
                 listView.setAdapter(adapter);
-                fetchBtn.setVisibility(View.GONE);
-                loadBtn.setVisibility(View.VISIBLE);
-                topBtn.setVisibility(View.VISIBLE);
             } else
             {
                 process = new fetchData(getApplicationContext(), APIUrl, listToShow);
                 process.execute();
             }
+            fetchBtn.setVisibility(View.GONE);
+            loadBtn.setVisibility(View.VISIBLE);
+            topBtn.setVisibility(View.VISIBLE);
             loadText.setText(savedInstanceState.getString("loadText"));
             sortFirmaAsc = savedInstanceState.getBoolean("sortFirmaAsc");
             sortOrgNumAsc = savedInstanceState.getBoolean("sortOrgNumAsc");
@@ -91,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         {
             process = new fetchData(getApplicationContext(), APIUrl, listToShow);
             process.execute();
+            fetchBtn.setVisibility(View.GONE);
+            loadBtn.setVisibility(View.VISIBLE);
+            topBtn.setVisibility(View.VISIBLE);
         }
 
         //Åpner nytt vindu som viser opplysninger om selskapet
@@ -122,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Knapp som laster inn flere data fra API. Går til neste side i API og stopper når den når 100 ettersom det er maksgrensen.
-        loadBtn = (Button) findViewById(R.id.loadBtn);
         loadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -130,8 +134,6 @@ public class MainActivity extends AppCompatActivity {
                 if ((pageCounter + 1) > 100) {
                     Toast.makeText(getApplicationContext(), "Kan ikke laste fler en 100 sider fra API", Toast.LENGTH_LONG).show();
                 } else {
-                    pageCounter++;
-
                     //Metode som laster inn neste side fra API
                     loadNextPage();
                 }
@@ -139,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Knapp som får listen til å peke på første(toppen)
-        topBtn = (Button) findViewById(R.id.topBtn);
         topBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

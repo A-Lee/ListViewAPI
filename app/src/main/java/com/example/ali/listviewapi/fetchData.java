@@ -120,10 +120,11 @@ public class fetchData extends AsyncTask<Void,Void,Void>
         super.onPostExecute(aVoid);
         if(internettConnection)
         {
+            MainActivity.pageCounter++;
             MainActivity.adapter = new ItemAdapter(context, MainActivity.listToShow);
             MainActivity.listView.setAdapter(MainActivity.adapter);
             //MainActivity.loadText.setVisibility(View.GONE);
-            MainActivity.loadText.setText("Antall sider lastet fra API: " + (MainActivity.pageCounter + 1));
+            MainActivity.loadText.setText("Antall sider lastet fra API: " + (MainActivity.pageCounter));
             MainActivity.fetchBtn.setVisibility(View.GONE);
             MainActivity.loadBtn.setVisibility(View.VISIBLE);
             MainActivity.topBtn.setVisibility(View.VISIBLE);;
